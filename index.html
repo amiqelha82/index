@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz IPA - Bagian Tubuhan</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body { background:#f8f9fa; }
+.header { background:#007bff; color:white; padding:15px; text-align:center; }
+.footer { background:#007bff; color:white; padding:15px; text-align:center; margin-top:40px; }
+.card { background:#ffffff; }
+.theme { color:#563d7c; }
+.btn { text-align:left; }
+.container { max-width:500px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+<h5>Quiz IPA Bagian Tumbuhan</h5>
+<h6>Score: <span id="score">Rp. 0</span></h6>
+</div>
+
+<div class="container mt-4" id="loginPage">
+<div class="card p-3 shadow">
+<h6 class="text-center theme">Masukkan Nama Murid</h6>
+<input type="text" id="nama" class="form-control mt-2" placeholder="Nama Murid">
+<button class="btn btn-primary mt-3 w-100" onclick="startQuiz()">Mulai Quiz</button>
+</div>
+</div>
+
+<div class="container mt-4" id="quizPage" style="display:none;">
+<div class="card p-3 shadow">
+<div id="question"></div>
+<div id="options" class="mt-2"></div>
+</div>
+</div>
+
+<div class="container mt-4 text-center" id="endPage" style="display:none;">
+<h5 class="theme">Terima kasih sudah mengerjakan quiz!</h5>
+<h6 id="finalScore"></h6>
+</div>
+
+<div class="footer">
+Guru WIWIN
+</div>
+
+<script>
+let murid = "";
+let score = 0;
+let current = 0;
+
+const questions = [
+{ q:"Apa fungsi akar pada tumbuhan?", options:["Menyerap air","Tempat fotosintesis","Menghasilkan bunga","Tempat buah"], a:0},
+{ q:"Bagian tumbuhan yang berfungsi membuat makanan adalah?", options:["Daun","Akar","Batang","Bunga"], a:0},
+{ q:"Batang berfungsi untuk?", options:["Menopang tumbuhan","Menyerap air","Fotosintesis","Menghasilkan biji"], a:0},
+{ q:"Tempat terjadinya fotosintesis adalah?", options:["Daun","Akar","Buah","Batang"], a:0},
+{ q:"Bunga berfungsi untuk?", options:["Alat perkembangbiakan","Menyerap air","Tempat makanan","Menopang"], a:0},
+{ q:"Buah berasal dari bagian?", options:["Bunga","Daun","Akar","Batang"], a:0},
+{ q:"Bagian tumbuhan yang menyerap air adalah?", options:["Akar","Daun","Bunga","Buah"], a:0},
+{ q:"Daun berwarna hijau karena?", options:["Klorofil","Air","Akar","Tanah"], a:0},
+{ q:"Bagian tumbuhan tempat biji berada adalah?", options:["Buah","Akar","Batang","Daun"], a:0},
+{ q:"Batang membantu mengedarkan?", options:["Air dan zat makanan","Bunga","Buah","Tanah"], a:0},
+{ q:"Akar tumbuhan biasanya berada di?", options:["Dalam tanah","Udara","Daun","Buah"], a:0},
+{ q:"Daun berfungsi untuk?", options:["Fotosintesis","Menyerap air","Menopang","Menyimpan biji"], a:0},
+{ q:"Batang menghubungkan?", options:["Akar dan daun","Buah dan tanah","Bunga dan biji","Tanah dan udara"], a:0},
+{ q:"Bagian tumbuhan untuk perkembangbiakan adalah?", options:["Bunga","Akar","Daun","Batang"], a:0},
+{ q:"Buah melindungi?", options:["Biji","Daun","Akar","Batang"], a:0},
+{ q:"Klorofil terdapat di?", options:["Daun","Akar","Batang","Buah"], a:0},
+{ q:"Batang tumbuhan biasanya?", options:["Tegak","Tipis","Kecil","Lunak"], a:0},
+{ q:"Akar membantu tumbuhan?", options:["Berdiri kokoh","Berbuah","Berbunga","Berwarna"], a:0},
+{ q:"Bunga akan menjadi?", options:["Buah","Akar","Batang","Daun"], a:0},
+{ q:"Fotosintesis membutuhkan?", options:["Cahaya matahari","Tanah","Air laut","Angin"], a:0},
+{ q:"Daun memiliki?", options:["Klorofil","Akar","Batang","Buah"], a:0},
+{ q:"Akar serabut terdapat pada?", options:["Padi","Mangga","Jambu","Durian"], a:0},
+{ q:"Akar tunggang terdapat pada?", options:["Mangga","Padi","Jagung","Rumput"], a:0},
+{ q:"Batang pohon besar biasanya?", options:["Keras","Lunak","Kecil","Tipis"], a:0},
+{ q:"Biji akan tumbuh menjadi?", options:["Tumbuhan baru","Daun","Batang","Akar"], a:0},
+{ q:"Bagian tumbuhan paling bawah adalah?", options:["Akar","Daun","Bunga","Buah"], a:0},
+{ q:"Bagian tumbuhan paling atas biasanya?", options:["Daun","Akar","Tanah","Biji"], a:0},
+{ q:"Batang berfungsi sebagai?", options:["Penyalur air","Penghasil buah","Penyerap tanah","Tempat biji"], a:0},
+{ q:"Bunga memiliki warna untuk?", options:["Menarik serangga","Menyerap air","Menyimpan makanan","Menopang"], a:0},
+{ q:"Daun tipis membantu?", options:["Fotosintesis","Menyerap tanah","Menopang","Menyimpan biji"], a:0},
+{ q:"Buah dapat dimakan karena?", options:["Mengandung nutrisi","Berwarna hijau","Besar","Keras"], a:0},
+{ q:"Akar tumbuh ke arah?", options:["Tanah","Langit","Daun","Bunga"], a:0},
+{ q:"Batang tumbuh ke arah?", options:["Atas","Bawah","Tanah","Air"], a:0},
+{ q:"Daun menangkap?", options:["Cahaya matahari","Tanah","Air laut","Angin"], a:0},
+{ q:"Biji berada di dalam?", options:["Buah","Akar","Batang","Daun"], a:0},
+{ q:"Akar juga berfungsi menyimpan?", options:["Cadangan makanan","Air laut","Udara","Biji"], a:0},
+{ q:"Bunga mengandung?", options:["Putik dan benang sari","Akar","Batang","Daun"], a:0},
+{ q:"Putik berfungsi sebagai?", options:["Alat betina","Alat jantan","Akar","Batang"], a:0},
+{ q:"Benang sari berfungsi sebagai?", options:["Alat jantan","Akar","Daun","Buah"], a:0},
+{ q:"Batang dapat menyimpan?", options:["Air","Tanah","Udara","Bunga"], a:0},
+{ q:"Daun memiliki tulang daun untuk?", options:["Menopang daun","Menyerap air","Menyimpan biji","Berbuah"], a:0},
+{ q:"Buah terbentuk setelah?", options:["Penyerbukan","Akar","Daun","Tanah"], a:0},
+{ q:"Penyerbukan terjadi di?", options:["Bunga","Akar","Batang","Buah"], a:0},
+{ q:"Akar membantu penyerapan?", options:["Air dan mineral","Buah","Bunga","Udara"], a:0},
+{ q:"Daun membantu pertukaran?", options:["Gas","Tanah","Air laut","Biji"], a:0},
+{ q:"Batang menopang?", options:["Daun dan bunga","Akar","Tanah","Biji"], a:0},
+{ q:"Bunga menghasilkan?", options:["Biji","Akar","Daun","Batang"], a:0},
+{ q:"Buah melindungi?", options:["Biji","Daun","Batang","Akar"], a:0},
+{ q:"Bagian utama tumbuhan ada?", options:["Akar, batang, daun","Biji saja","Tanah","Air"], a:0}
+];
+
+function speak(text){
+let utter = new SpeechSynthesisUtterance(text);
+utter.lang = "id-ID";
+speechSynthesis.speak(utter);
+}
+
+function startQuiz(){
+murid = document.getElementById("nama").value;
+if(murid=="") return alert("Isi nama dulu!");
+document.getElementById("loginPage").style.display="none";
+document.getElementById("quizPage").style.display="block";
+speak("Halo " + murid + ". Soal soal pelajaran ini dibuat oleh Guru WIWIN");
+loadQuestion();
+}
+
+function loadQuestion(){
+if(current>=questions.length){ endQuiz(); return; }
+let q = questions[current];
+document.getElementById("question").innerHTML = "<p>("+q.q+"</p>";
+let optHTML="";
+q.options.forEach((o,i)=>{
+optHTML += `<button class='btn btn-outline-primary w-100 mt-2' onclick='answer(${i})'>${String.fromCharCode(97+i)}. ${o}</button>`;
+});
+document.getElementById("options").innerHTML = optHTML;
+}
+
+function formatRupiah(num){
+return "Rp. " + num.toLocaleString('id-ID');
+}
+
+function answer(i){
+if(i===questions[current].a){
+score+=1000;
+speak("Jawaban benar " + murid + ". Kamu Hebat");
+}else{
+score-=1000;
+speak("Jawaban salah " + murid + ". Silahkan Coba Lagi");
+}
+document.getElementById("score").innerText = formatRupiah(score);
+current++;
+loadQuestion();
+}
+
+function endQuiz(){
+document.getElementById("quizPage").style.display="none";
+document.getElementById("endPage").style.display="block";
+document.getElementById("finalScore").innerText = "Score Akhir: " + formatRupiah(score);
+speak("Terima kasih " + murid + ". Kamu telah menyelesaikan quiz Guru WIWIN");
+}
+</script>
+
+</body>
+</html>
